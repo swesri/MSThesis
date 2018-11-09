@@ -1,0 +1,2241 @@
+#################################################################################################
+#pirna.ab
+#Date Created: September 2,2015
+#Last Update by Swetha Varadarajan: May 16, 2016
+#################################################################################################
+double eh0(int,int);
+double esbi0(int,int,int,int);
+double ehr(int,int);
+double esbir(int,int,int,int);
+double emulti(int,int,int);
+double ekissing(int,int,int);
+bool base_pair(char,char);
+double eintstack(int,int,int);
+double ekissingstack(int,int);
+double eintbi(int,int,int,int);
+double ekissingbi(int,int,int,int);
+double noisolate(int);
+double eaupenalty(int,int,int,int);
+double eintstackpenalty(int);
+
+
+affine piRNAb2 {N,M,MHL|N>8 && M>8 && MHL>10}
+input
+	//inputs
+	unsigned char seq0 {i|0<=i<N};
+	unsigned char seqr {i|0<=i<M};
+output
+	//outputs
+	unsigned char seq1 {i|0<=i<M};
+	double Q00 {i,j| 0<=i<N && i<=j<N };
+	double Q10 {i,j| 0<=i<N && i<=j<N };
+	double Qi {i1,j1,i2,j2| N>=j1+1 && i2>=0 && M>=j2+1 && j2>=i2 && i1>=0 && j1>=i1 } ;
+	double Qiy{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixm00{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixm01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixm02{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixm10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixm11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixm12{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixk00{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixk01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixk10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qixk11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	
+	double Qimm02{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qimm12{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qimm20{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qimm21{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qimm22{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qimk01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qimk11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};	
+	double Qimk20{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qimk21{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qikm10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qikm11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qikm02{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qikm12{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qikk01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};	
+	double Qikk10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};	
+	double Qikk11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};	
+
+	double Qiann01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiann02{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiann10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiann11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiann12{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiann20{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiann21{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiann22{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiand01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiand10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiand11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiand20{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiand21{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiadn01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiadn02{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiadn10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiadn11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiadn12{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiadd01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiadd10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiadd11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	
+	double Qiar01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiar10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qiar11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qilr01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qilr10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qilr11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qir01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qir10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qir11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	
+	double Qia{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qib00{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qib01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};	
+	double Qib10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qib11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	
+	double Qinn01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qinn02{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qinn10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qinn11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qinn12{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};	
+	double Qinn20{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qinn21{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qinn22{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qind01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qind10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qind11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qind20{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qind21{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qidn01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qidn02{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qidn10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qidn11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qidn12{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qidd01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qidd10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qidd11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	
+	//local-need to resolve-5dimensional
+	double Qix00{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qix01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qix10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qix11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double auxqiadd01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double auxqiadd10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double auxqiadd11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};	
+	double auxqia01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double auxqia10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double auxqia11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	
+	
+local
+	double Qb0{i,j|0<=i<N && i<=j<N };
+	double Qg0{i,j,d,e|0<=i<N && i<=j<N && i+1<=d<=j-5 && d+4<=e<=j-1};
+	double tempqg0{i,j,d,e|0<=i<N && i+6<j<N && i+1<d<=j-5 && d+4<=e<j-1};
+	double tempqgk0{i,j,d,e|0<=i<N && i<=j<N && i<d<=j-3 && d+2<=e<j};
+	double tempqgm0{i,j,d,e|0<=i<N && i<=j<N && i<d<=j-3 && d+2<=e<j};
+	double Qbr{i,j|0<=i<M && i<=j<M };
+	double Qgr{i,j,d,e|0<=i<M && i<=j<M && i+1<=d<=j-5 && d+4<=e<=j-1};
+	double tempqgr{i,j,d,e|0<=i<M && i+6<j<M && i+1<d<=j-5 && d+4<=e<j-1};
+	double tempqgkr{i,j,d,e|0<=i<M && i<=j<M && i<d<=j-3 && d+2<=e<j};
+	double tempqgmr{i,j,d,e|0<=i<M && i<=j<M && i<d<=j-3 && d+2<=e<j};
+	//old outputs - checked ones
+	double Qm00{i,j|0<=i<N && i<=j<N };
+	double Qm10{i,j|0<=i<N && i<=j<N };
+	double Q0r {i,j| 0<=i<M && i<=j<M };
+	double Q1r {i,j| 0<=i<M && i<=j<M };
+	double Qm0r{i,j|0<=i<M && i<=j<M };
+	double Qm1r{i,j|0<=i<M && i<=j<M };
+	double Qgk1{i,j,d,e|0<=i<M && i<=j<M && i<=d<=j-2 && d+2<=e<=j};
+	double Qgm1{i,j,d,e|0<=i<M && i<=j<M && i<=d<=j-2 && d+2<=e<=j};
+	double Q01 {i,j| 0<=i<M && i<=j<M };	
+	double Q11 {i,j| 0<=i<M && i<=j<M };
+	double Qm01{i,j|0<=i<M && i<=j<M };
+	double Qm11{i,j|0<=i<M && i<=j<M };
+	double Qih0{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qih1{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qihh00{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qihh01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qihh10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qihh11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qihm00{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qihm01{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qihm10{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qihm11{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double Qgkr{i,j,d,e|0<=i<M && i<=j<M && i<=d<=j-2 && d+2<=e<=j};
+	double Qgmr{i,j,d,e|0<=i<M && i<=j<M && i<=d<=j-2 && d+2<=e<=j};
+	double Qgk0{i,j,d,e|0<=i<N && i<=j<N && i<=d<=j-2 && d+2<=e<=j};
+	double Qgm0{i,j,d,e|0<=i<N && i<=j<N && i<=d<=j-2 && d+2<=e<=j};
+	double Q20 {i,j| 0<=i<N && i<=j<N };
+	double Qm20{i,j|0<=i<N && i<=j<N };
+	double Qm2r{i,j|0<=i<M && i<=j<M };
+	double Q2r {i,j| 0<=i<M && i<=j<M };
+	double Q21 {i,j| 0<=i<M && i<=j<M };
+	//double Qm21{i,j|0<=i<M && i<=j<M };
+	//new locals
+	//local -computeXY
+	
+	double tempQiy1{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiy2{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm001{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm002{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm021{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm022{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm121{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixm122{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixk001{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixk002{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixk011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixk012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixk101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixk102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixk111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQixk112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	//local - computeImmkk
+	double tempQimm021{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm022{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm023{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm121{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm122{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm123{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm201{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm202{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm203{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm211{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm212{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm213{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm221{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm222{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimm223{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk013{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk014{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk113{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk114{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk201{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk202{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk203{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk204{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk211{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk212{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk213{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQimk214{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm103{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm104{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm113{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm114{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm021{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm022{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm023{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm024{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm121{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm122{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm123{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikm124{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk013{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk014{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk015{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk103{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk104{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk105{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk113{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk114{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQikk115{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	//local - compute Ia_nndd
+	double tempQiann011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann013{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann014{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann015{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann016{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann021{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann022{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann023{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann024{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann025{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann026{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann103{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann104{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann105{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann106{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann113{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann114{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann115{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann116{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann121{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann122{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann123{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann124{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann125{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann126{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann201{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann202{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann203{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann204{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann205{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann206{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann211{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann212{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann213{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann214{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann215{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann216{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann221{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann222{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann223{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann224{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann225{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiann226{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand013{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand014{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand015{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand103{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand104{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand105{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand113{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand114{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand115{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand201{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand202{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand203{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand204{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand205{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand211{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand212{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand213{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand214{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiand215{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn013{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn014{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn015{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn021{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn022{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn023{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn024{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn025{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn103{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn104{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn105{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn113{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn114{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn115{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn121{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn122{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn123{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn124{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadn125{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd013{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd014{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd015{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd103{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd104{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd105{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd113{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd114{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiadd115{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+		//local- compute Aux
+	double tempQir011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQir012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQir101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQir102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQir111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQir112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar013{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar103{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQiar113{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQilr011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQilr012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQilr101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQilr102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQilr111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQilr112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	//local - compute I
+	double tempQi1{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQi2{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQia1{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQia2{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQia3{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQia4{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQia5{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQia6{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQib001{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQib002{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQib011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQib012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQib101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQib102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQib111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQib112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	//local - compute Inndd
+	double tempQinn011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQinn021{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQinn101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQinn111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQinn121{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};	
+	double tempQinn201{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQinn211{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQinn221{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQidd011{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQidd101{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQidd111{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQidd012{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQidd102{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+	double tempQidd112{i1,j1,i2,j2|0<=i1<N && i1<=j1<N && 0<=i2<M && i2<=j2<M};
+		
+let
+	//equations
+	
+	Q00[i,j]=case
+			{|j>i+4 }:1+reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:Q00[i,d-1]*Qb0[d,e])+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]);
+			{|j==i+4 }:1+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]);
+			{|j<i+4}:1;
+			esac ;
+			
+	Q10[i,j]=case
+			{|j>i+4 }:ekissing(0,[j]-[i]+1,0)+reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:Q10[i,d-1]*Qb0[d,e]*ekissing(0,[j]-[e],1))+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]*ekissing(0,[j]-[e],1));
+			{|j==i+4 }:ekissing(0,[j]-[i]+1,0)+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]*ekissing(0,[j]-[e],1));
+			{|j<i+4}:ekissing(0,[j]-[i]+1,0);
+			esac ;
+			
+	Q20[i,j]=case
+			{|j>i+4 }:emulti(0,[j]-[i]+1,0)+reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:Q20[i,d-1]*Qb0[d,e]*emulti(0,[j]-[e],1))+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]*emulti(0,[j]-[e],1));
+			{|j==i+4 }:emulti(0,[j]-[i]+1,0)+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]*emulti(0,[j]-[e],1));
+			{|j<i+4}:emulti(0,[j]-[i]+1,0);
+			esac ;
+			
+			
+	Qm00[i,j]=case
+			{|j>i+4 }:reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:(Qm00[i,d-1]*Qb0[d,e])+Qb0[d,e])+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]);
+			{|j==i+4}:reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]);
+			{|j<i+4}:0;
+			esac ;	
+			
+	Qm10[i,j]=case
+			{|j>i+4 }:reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:(Qm10[i,d-1]*Qb0[d,e]*ekissing(0,[j]-[e],1))+(Qb0[d,e]*ekissing(0,[j]-[i]-([e]-[d]),1)))+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]*ekissing(0,[j]-[i]-([e]-[d]),1));
+			{|j==i+4}:reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]*ekissing(0,[j]-[i]-([e]-[d]),1));
+			{|j<i+4}:0;
+			esac ;	
+			
+	Qm20[i,j]=case
+			{|j>i+4 }:reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:(Qm20[i,d-1]*Qb0[d,e]*emulti(0,[j]-[e],1))+(Qb0[d,e]*emulti(0,[j]-[i]-([e]-[d]),1)))+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]*emulti(0,[j]-[i]-([e]-[d]),1));
+			{|j==i+4}:reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qb0[d,e]*emulti(0,[j]-[i]-([e]-[d]),1));
+			{|j<i+4}:0;
+			esac ;	
+			
+
+	Qb0[i,j]=if(base_pair(seq0[i],seq0[j])) then
+			case
+			{|j>i+6 }:eh0([i],[j])+reduce(+,[d,e],{|i+1<d<=j-5 && d+4<=e<j}:Qm20[i+1,d-1]*Qb0[d,e]*emulti(1,[j]-[e]-1,1)+esbi0([i],[j],[d],[e])*Qb0[d,e])+reduce(+,[d,e],{|d==i+1 && d+4<=e<j}: esbi0([i],[j],[d],[e])*Qb0[d,e]);
+			{|j==i+6 }:eh0([i],[j])+reduce(+,[d,e],{|d==i+1 && d+4<=e<j}: esbi0([i],[j],[d],[e])*Qb0[d,e]) ;	
+			{|i+3<j<i+6 }:eh0([i],[j]);
+			{|j<=i+3}:0;
+			esac 
+			else
+			0;
+			
+	Qg0[i,j,d,e]=if(base_pair(seq0[i],seq0[j]) and base_pair(seq0[d],seq0[e])) then
+			case
+			{|d>i+1 && e==j-1 && j>i+6}: esbi0([i],[j],[d],[e])+Qm20[i+1,d-1]*emulti(1,[j]-[e]-1,1);
+			{|e<j-1 && d==i+1 && j>i+6}: esbi0([i],[j],[d],[e])+Qm20[e+1,j-1]*emulti(1,[d]-[i]-1,1);
+			{|e<j-1 && d>i+1 && j>i+6}:esbi0([i],[j],[d],[e])+Qm20[e+1,j-1]*emulti(1,[d]-[i]-1,1)
+															+Qm20[i+1,d-1]*emulti(1,[j]-[e]-1,1)
+									   						+Qm20[i+1,d-1]*Qm20[e+1,j-1]*emulti(1,0,1)+ 
+									   Qg0[i+1,j-1,d,e]*esbi0([i],[j],[i+1],[j-1])+
+									   tempqg0;
+			{|e==j-1 && d==i+1 && j>i+6}:esbi0([i],[j],[d],[e]);
+			{|j==i+6}:esbi0([i],[j],[d],[e]);
+			{|j<=i+5}:0;
+			esac 
+			else if(base_pair(seq0[i],seq0[j]) and not(base_pair(seq0[d],seq0[e]))) then
+			case 
+			{|e==j-1 && d==i+1 && j>=i+6}:esbi0([i],[j],[d],[e]);
+			{|e<j-1}||{|d>i+1}||{|e==j-1 && d==i+1 && j<i+6}:0;
+			esac
+			else
+			0;
+	
+	tempqg0[i,j,d,e]=case
+					{|d>i+2 && e<j-2}:reduce(+,[h,f],{|i+1<h<d && e<f<j-1}: (Qg0[h,f,d,e]*esbi0([i],[j],[h],[f])+Qm20[i+1,h-1]*Qm20[f+1,j-1]*emulti(1,0,1)*Qg0[h,f,d,e]+
+															Qm20[f+1,j-1]*emulti(1,[h]-[i]-1,1)*Qg0[h,f,d,e]+
+															Qm20[i+1,h-1]*emulti(1,[j]-[f]-1,1)*Qg0[h,f,d,e]))+
+					reduce(+,[h,f],{|h==i+1 && e<f<j-1 }: Qg0[h,f,d,e]*esbi0([i],[j],[h],[f])+Qm20[f+1,j-1]*emulti(1,[h]-[i]-1,1)*Qg0[h,f,d,e])+
+				    reduce(+,[h,f],{|i+1<h<d && f==j-1}: Qg0[h,f,d,e]*esbi0([i],[j],[h],[f])+Qm20[i+1,h-1]*emulti(1,[j]-[f]-1,1)*Qg0[h,f,d,e]);
+				    
+				    {|d==i+2 && e<j-2}:reduce(+,[h,f],{|h==i+1 && e<f<j-1 }: Qg0[h,f,d,e]*esbi0([i],[j],[h],[f])+Qm20[f+1,j-1]*emulti(1,[h]-[i]-1,1)*Qg0[h,f,d,e]);
+				    {|d>i+2 && e==j-2}:reduce(+,[h,f],{|i+1<h<d && f==j-1}: Qg0[h,f,d,e]*esbi0([i],[j],[h],[f])+Qm20[i+1,h-1]*emulti(1,[j]-[f]-1,1)*Qg0[h,f,d,e]);
+				    {|d==i+2 && e==j-2}:0;
+				    esac ;
+							    
+	Qgk0[i,j,d,e]=if(base_pair(seq0[i],seq0[j]) and ([j] > [i]+3)) then
+				case
+				{|d>i && e<j }:Q10[i+1,d]*Q10[e,j-1]*ekissing(0,0,1)+tempqgk0;
+				{|d>i && e==j}:Q10[i+1,d]*ekissing(0,0,1);
+				{|d==i && e<j}:Q10[e,j-1]*ekissing(0,0,1);
+				{|d==i && e==j}:ekissing(0,0,1);
+				esac
+				else
+				0; 		
+				
+	tempqgk0[i,j,d,e]=case
+				{|i>=j-5}:0;
+				{|e<=i+4 && d==i+1 && j-i>=6}:reduce(+,[h,f],{|h==d && h+4<=f<=j-1}:Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1));
+				{|e<=i+4 && d==i+2 && j-i==6}:reduce(+,[h,f],{|i+1<=h<d && h+4<=f<=j-1}:Q10[h+1,d]*Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1));
+				{|e<=i+4 && d==i+2 && j-i>6}:reduce(+,[h,f],{|i+1<=h<d && h+4<=f<=j-1}:Q10[h+1,d]*Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+				reduce(+,[h,f],{|h==d && h+4<=f<=j-1 }:Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1));								
+				{|i+1<d<=j-5 && d+4<=e<j-1 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q10[h+1,d]*Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q10[h+1,d]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						Qg0[i,j,d,e]*ekissing(0,0,1);
+				{|i+1==d && d+4<=e<j-1 && j-i>=6}:reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+													Qg0[i,j,d,e]*ekissing(0,0,1);
+				{|i+1<d<=j-5 && e==j-1 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q10[h+1,d]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						Qg0[i,j,d,e]*ekissing(0,0,1);
+				{|i+1==d && e==j-1 && j-i>=6}:Qg0[i,j,d,e]*ekissing(0,0,1);
+				{|i+2<=d<j-4 && e==d+3 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3 }:Q10[h+1,d]*Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q10[h+1,d]*Qg0[i,j,h,f]*ekissing(0,0,1));
+				{|d==j-4 && e==d+3 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q10[h+1,d]*Qg0[i,j,h,f]*ekissing(0,0,1));
+				{|d==j-4 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q10[h+1,d]*Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q10[h+1,d]*Qg0[i,j,h,f]*ekissing(0,0,1));
+				{|i+3<=d<j-4 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q10[h+1,d]*Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q10[h+1,d]*Qg0[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q10[e,f-1]*Qg0[i,j,h,f]*ekissing(0,0,1));
+				{|d==j-3 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q10[h+1,d]*Qg0[i,j,h,f]*ekissing(0,0,1));
+				esac;		
+	
+	 	 
+				 
+	Qgm0[i,j,d,e]=if(base_pair(seq0[i],seq0[j]) and ([j] > [i]+3)) then
+				case
+				{|d>i && e<j}:Q20[i+1,d]*Q20[e,j-1]*emulti(0,0,1)+tempqgm0;
+				{|d>i && e==j}:Q20[i+1,d]*emulti(0,0,1);
+				{|d==i && e<j}:Q20[e,j-1]*emulti(0,0,1);
+				{|d==i && e==j}:emulti(0,0,1);
+				 esac else
+				0; 
+				 
+	tempqgm0[i,j,d,e]=case
+				{|i>=j-5}:0;
+				{|e<=i+4 && d==i+1 && j-i>=6}:reduce(+,[h,f],{|h==d && h+4<=f<=j-1}:Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1));
+				{|e<=i+4 && d==i+2 && j-i==6}:reduce(+,[h,f],{|i+1<=h<d && h+4<=f<=j-1}:Q20[h+1,d]*Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1));
+				{|e<=i+4 && d==i+2 && j-i>6}:reduce(+,[h,f],{|i+1<=h<d && h+4<=f<=j-1}:Q20[h+1,d]*Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1))+
+				reduce(+,[h,f],{|h==d && h+4<=f<=j-1 }:Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1));								
+				{|i+1<d<=j-5 && d+4<=e<j-1 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q20[h+1,d]*Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q20[h+1,d]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						Qg0[i,j,d,e]*emulti(0,0,1);
+				{|i+1==d && d+4<=e<j-1 && j-i>=6}:reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1))+
+													Qg0[i,j,d,e]*emulti(0,0,1);
+				{|i+1<d<=j-5 && e==j-1 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q20[h+1,d]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						Qg0[i,j,d,e]*emulti(0,0,1);
+				{|i+1==d && e==j-1 && j-i>=6}:Qg0[i,j,d,e]*emulti(0,0,1);
+				{|i+2<=d<j-4 && e==d+3 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3 }:Q20[h+1,d]*Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q20[h+1,d]*Qg0[i,j,h,f]*emulti(0,0,1));
+				{|d==j-4 && e==d+3 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q20[h+1,d]*Qg0[i,j,h,f]*emulti(0,0,1));
+				{|d==j-4 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q20[h+1,d]*Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q20[h+1,d]*Qg0[i,j,h,f]*emulti(0,0,1));
+				{|i+3<=d<j-4 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q20[h+1,d]*Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q20[h+1,d]*Qg0[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q20[e,f-1]*Qg0[i,j,h,f]*emulti(0,0,1));
+				{|d==j-3 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q20[h+1,d]*Qg0[i,j,h,f]*emulti(0,0,1));
+				esac;
+				
+	Q0r[i,j]=case
+			{|j>i+4 }:1+reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:Q0r[i,d-1]*Qbr[d,e])+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]);
+			{|j==i+4 }:1+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]);
+			{|j<i+4}:1;
+			esac ;
+			
+	Q1r[i,j]=case
+			{|j>i+4 }:ekissing(0,[j]-[i]+1,0)+reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:Q1r[i,d-1]*Qbr[d,e]*ekissing(0,[j]-[e],1))+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]*ekissing(0,[j]-[e],1));
+			{|j==i+4 }:ekissing(0,[j]-[i]+1,0)+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]*ekissing(0,[j]-[e],1));
+			{|j<i+4}:ekissing(0,[j]-[i]+1,0);
+			esac ;
+			
+	Q2r[i,j]=case
+			{|j>i+4 }:emulti(0,[j]-[i]+1,0)+reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:Q2r[i,d-1]*Qbr[d,e]*emulti(0,[j]-[e],1))+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]*emulti(0,[j]-[e],1));
+			{|j==i+4 }:emulti(0,[j]-[i]+1,0)+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]*emulti(0,[j]-[e],1));
+			{|j<i+4}:emulti(0,[j]-[i]+1,0);
+			esac ;
+			
+			
+	Qm0r[i,j]=case
+			{|j>i+4 }:reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:(Qm0r[i,d-1]*Qbr[d,e])+Qbr[d,e])+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]);
+			{|j==i+4}:reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]);
+			{|j<i+4}:0;
+			esac ;	
+			
+	Qm1r[i,j]=case
+			{|j>i+4 }:reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:(Qm1r[i,d-1]*Qbr[d,e]*ekissing(0,[j]-[e],1))+(Qbr[d,e]*ekissing(0,[j]-[i]-([e]-[d]),1)))+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]*ekissing(0,[j]-[i]-([e]-[d]),1));
+			{|j==i+4}:reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]*ekissing(0,[j]-[i]-([e]-[d]),1));
+			{|j<i+4}:0;
+			esac ;	
+			
+	Qm2r[i,j]=case
+			{|j>i+4 }:reduce(+,[d,e],{|i<d<=j-4 && d+4<=e<=j}:(Qm2r[i,d-1]*Qbr[d,e]*emulti(0,[j]-[e],1))+(Qbr[d,e]*emulti(0,[j]-[i]-([e]-[d]),1)))+reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]*emulti(0,[j]-[i]-([e]-[d]),1));
+			{|j==i+4}:reduce(+,[d,e],{|d==i && d+4<=e<=j}:Qbr[d,e]*emulti(0,[j]-[i]-([e]-[d]),1));
+			{|j<i+4}:0;
+			esac ;	
+			
+
+	Qbr[i,j]=if(base_pair(seqr[i],seqr[j])) then
+			case
+			{|j>i+6 }:ehr([i],[j])+reduce(+,[d,e],{|i+1<d<=j-5 && d+4<=e<j}:Qm2r[i+1,d-1]*Qbr[d,e]*emulti(1,[j]-[e]-1,1)+esbir([i],[j],[d],[e])*Qbr[d,e])+reduce(+,[d,e],{|d==i+1 && d+4<=e<j}: esbir([i],[j],[d],[e])*Qbr[d,e]);
+			{|j==i+6 }:ehr([i],[j])+reduce(+,[d,e],{|d==i+1 && d+4<=e<j}: esbir([i],[j],[d],[e])*Qbr[d,e]) ;	
+			{|i+3<j<i+6 }:ehr([i],[j]);
+			{|j<=i+3}:0;
+			esac 
+			else
+			0;
+			
+	Qgr[i,j,d,e]=if(base_pair(seqr[i],seqr[j]) and base_pair(seqr[d],seqr[e])) then
+			case
+			{|d>i+1 && e==j-1 && j>i+6}: esbir([i],[j],[d],[e])+Qm2r[i+1,d-1]*emulti(1,[j]-[e]-1,1);
+			{|e<j-1 && d==i+1 && j>i+6}: esbir([i],[j],[d],[e])+Qm2r[e+1,j-1]*emulti(1,[d]-[i]-1,1);
+			{|e<j-1 && d>i+1 && j>i+6}:esbir([i],[j],[d],[e])+Qm2r[e+1,j-1]*emulti(1,[d]-[i]-1,1)
+															+Qm2r[i+1,d-1]*emulti(1,[j]-[e]-1,1)
+									   						+Qm2r[i+1,d-1]*Qm2r[e+1,j-1]*emulti(1,0,1)+ 
+									   Qgr[i+1,j-1,d,e]*esbir([i],[j],[i+1],[j-1])+
+									   tempqgr;
+			{|e==j-1 && d==i+1 && j>i+6}:esbir([i],[j],[d],[e]);
+			{|j==i+6}:esbir([i],[j],[d],[e]);
+			{|j<=i+5}:0;
+			esac 
+			else if(base_pair(seqr[i],seqr[j]) and not(base_pair(seqr[d],seqr[e]))) then
+			case 
+			{|e==j-1 && d==i+1 && j>=i+6}:esbir([i],[j],[d],[e]);
+			{|e<j-1}||{|d>i+1}||{|e==j-1 && d==i+1 && j<i+6}:0;
+			esac
+			else
+			0;
+	
+	tempqgr[i,j,d,e]=case
+					{|d>i+2 && e<j-2}:reduce(+,[h,f],{|i+1<h<d && e<f<j-1}: (Qgr[h,f,d,e]*esbir([i],[j],[h],[f])+Qm2r[i+1,h-1]*Qm2r[f+1,j-1]*emulti(1,0,1)*Qgr[h,f,d,e]+
+															Qm2r[f+1,j-1]*emulti(1,[h]-[i]-1,1)*Qgr[h,f,d,e]+
+															Qm2r[i+1,h-1]*emulti(1,[j]-[f]-1,1)*Qgr[h,f,d,e]))+
+					reduce(+,[h,f],{|h==i+1 && e<f<j-1 }: Qgr[h,f,d,e]*esbir([i],[j],[h],[f])+Qm2r[f+1,j-1]*emulti(1,[h]-[i]-1,1)*Qgr[h,f,d,e])+
+				    reduce(+,[h,f],{|i+1<h<d && f==j-1}: Qgr[h,f,d,e]*esbir([i],[j],[h],[f])+Qm2r[i+1,h-1]*emulti(1,[j]-[f]-1,1)*Qgr[h,f,d,e]);
+				    
+				    {|d==i+2 && e<j-2}:reduce(+,[h,f],{|h==i+1 && e<f<j-1 }: Qgr[h,f,d,e]*esbir([i],[j],[h],[f])+Qm2r[f+1,j-1]*emulti(1,[h]-[i]-1,1)*Qgr[h,f,d,e]);
+				    {|d>i+2 && e==j-2}:reduce(+,[h,f],{|i+1<h<d && f==j-1}: Qgr[h,f,d,e]*esbir([i],[j],[h],[f])+Qm2r[i+1,h-1]*emulti(1,[j]-[f]-1,1)*Qgr[h,f,d,e]);
+				    {|d==i+2 && e==j-2}:0;
+				    esac ;
+							    
+	Qgkr[i,j,d,e]=if(base_pair(seqr[i],seqr[j]) and ([j] > [i]+3)) then
+				case
+				{|d>i && e<j }:Q1r[i+1,d]*Q1r[e,j-1]*ekissing(0,0,1)+tempqgkr;
+				{|d>i && e==j}:Q1r[i+1,d]*ekissing(0,0,1);
+				{|d==i && e<j}:Q1r[e,j-1]*ekissing(0,0,1);
+				{|d==i && e==j}:ekissing(0,0,1);
+				esac
+				else
+				0; 		
+				
+	tempqgkr[i,j,d,e]=case
+				{|i>=j-5}:0;
+				{|e<=i+4 && d==i+1 && j-i>=6}:reduce(+,[h,f],{|h==d && h+4<=f<=j-1}:Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1));
+				{|e<=i+4 && d==i+2 && j-i==6}:reduce(+,[h,f],{|i+1<=h<d && h+4<=f<=j-1}:Q1r[h+1,d]*Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1));
+				{|e<=i+4 && d==i+2 && j-i>6}:reduce(+,[h,f],{|i+1<=h<d && h+4<=f<=j-1}:Q1r[h+1,d]*Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+				reduce(+,[h,f],{|h==d && h+4<=f<=j-1 }:Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1));								
+				{|i+1<d<=j-5 && d+4<=e<j-1 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q1r[h+1,d]*Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q1r[h+1,d]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						Qgr[i,j,d,e]*ekissing(0,0,1);
+				{|i+1==d && d+4<=e<j-1 && j-i>=6}:reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+													Qgr[i,j,d,e]*ekissing(0,0,1);
+				{|i+1<d<=j-5 && e==j-1 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q1r[h+1,d]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						Qgr[i,j,d,e]*ekissing(0,0,1);
+				{|i+1==d && e==j-1 && j-i>=6}:Qgr[i,j,d,e]*ekissing(0,0,1);
+				{|i+2<=d<j-4 && e==d+3 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3 }:Q1r[h+1,d]*Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q1r[h+1,d]*Qgr[i,j,h,f]*ekissing(0,0,1));
+				{|d==j-4 && e==d+3 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q1r[h+1,d]*Qgr[i,j,h,f]*ekissing(0,0,1));
+				{|d==j-4 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q1r[h+1,d]*Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q1r[h+1,d]*Qgr[i,j,h,f]*ekissing(0,0,1));
+				{|i+3<=d<j-4 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q1r[h+1,d]*Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q1r[h+1,d]*Qgr[i,j,h,f]*ekissing(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q1r[e,f-1]*Qgr[i,j,h,f]*ekissing(0,0,1));
+				{|d==j-3 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q1r[h+1,d]*Qgr[i,j,h,f]*ekissing(0,0,1));
+				esac;		
+	
+	 	 
+				 
+	Qgmr[i,j,d,e]=if(base_pair(seqr[i],seqr[j]) and ([j] > [i]+3)) then
+				case
+				{|d>i && e<j}:Q2r[i+1,d]*Q2r[e,j-1]*emulti(0,0,1)+tempqgmr;
+				{|d>i && e==j}:Q2r[i+1,d]*emulti(0,0,1);
+				{|d==i && e<j}:Q2r[e,j-1]*emulti(0,0,1);
+				{|d==i && e==j}:emulti(0,0,1);
+				 esac else
+				0; 
+				 
+	tempqgmr[i,j,d,e]=case
+				{|i>=j-5}:0;
+				{|e<=i+4 && d==i+1 && j-i>=6}:reduce(+,[h,f],{|h==d && h+4<=f<=j-1}:Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1));
+				{|e<=i+4 && d==i+2 && j-i==6}:reduce(+,[h,f],{|i+1<=h<d && h+4<=f<=j-1}:Q2r[h+1,d]*Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1));
+				{|e<=i+4 && d==i+2 && j-i>6}:reduce(+,[h,f],{|i+1<=h<d && h+4<=f<=j-1}:Q2r[h+1,d]*Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1))+
+				reduce(+,[h,f],{|h==d && h+4<=f<=j-1 }:Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1));								
+				{|i+1<d<=j-5 && d+4<=e<j-1 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q2r[h+1,d]*Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q2r[h+1,d]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						Qgr[i,j,d,e]*emulti(0,0,1);
+				{|i+1==d && d+4<=e<j-1 && j-i>=6}:reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1))+
+													Qgr[i,j,d,e]*emulti(0,0,1);
+				{|i+1<d<=j-5 && e==j-1 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q2r[h+1,d]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						Qgr[i,j,d,e]*emulti(0,0,1);
+				{|i+1==d && e==j-1 && j-i>=6}:Qgr[i,j,d,e]*emulti(0,0,1);
+				{|i+2<=d<j-4 && e==d+3 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3 }:Q2r[h+1,d]*Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q2r[h+1,d]*Qgr[i,j,h,f]*emulti(0,0,1));
+				{|d==j-4 && e==d+3 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q2r[h+1,d]*Qgr[i,j,h,f]*emulti(0,0,1));
+				{|d==j-4 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q2r[h+1,d]*Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q2r[h+1,d]*Qgr[i,j,h,f]*emulti(0,0,1));
+				{|i+3<=d<j-4 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e<f<=j-1 && f>h+3}:Q2r[h+1,d]*Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q2r[h+1,d]*Qgr[i,j,h,f]*emulti(0,0,1))+
+						reduce(+,[h,f],{|h==d && e<f<=j-1 && f>h+3}:Q2r[e,f-1]*Qgr[i,j,h,f]*emulti(0,0,1));
+				{|d==j-3 && e==d+2 && j-i>=6}:reduce(+,[h,f],{|i+1<=h<d && e==f && f>h+3}:Q2r[h+1,d]*Qgr[i,j,h,f]*emulti(0,0,1));
+				esac;
+	
+	seq1[i]=seqr[M-1-i];
+	Q01[i,j]=Q0r[M-1-j,M-1-i];
+	Q11[i,j]=Q1r[M-1-j,M-1-i];
+	Q21[i,j]=Q2r[M-1-j,M-1-i];
+	Qm01[i,j]=Qm0r[M-1-j,M-1-i];
+	Qm11[i,j]=Qm1r[M-1-j,M-1-i];
+	//Qm21[i,j]=Qm2r[M-1-j,M-1-i];
+	Qgk1[i,j,d,e]=Qgkr[M-1-j,M-1-i,M-1-e,M-1-d];
+	Qgm1[i,j,d,e]=Qgmr[M-1-j,M-1-i,M-1-e,M-1-d];
+	
+	Qih0[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2]) and base_pair(seq0[j1],seq1[j2])) then
+					  case
+					  {|j1==i1 && j2==i2}:noisolate(0)+eintbi([i1],[i2],[j1],[j2]);
+					  {|j1 == i1+1 && j2 == i2+1} || {|j2==i2+1 && j1==i1+1 && i2>=N-1}:eintstack(0,[i1],[i2]);
+					  {|j1>i1+1 && j2==i2+2}:eintbi([i1],[i2],[j1],[j2])+Qih0[i1+1,j1,i2+1,j2]*eintstack(0,[i1],[i2])+	
+					  		reduce(+,[d],{|i1+1<d<j1 && d<i1+MHL }:Qih0[d,j1,i2+1,j2]*eintbi([i1],[i2],[d],[i2+1]));					  		
+					  {|j1==i1+2 && j2>i2+2}:eintbi([i1],[i2],[j1],[j2])+Qih0[i1+1,j1,i2+1,j2]*eintstack(0,[i1],[i2])+					  		
+					  		reduce(+,[e],{|i2+1<e<j2 && e<i2+MHL }:Qih0[i1+1,j1,e,j2]*eintbi([i1],[i2],[i1+1],[e]));
+					  {|j1>i1+2 && j2>i2+2}:eintbi([i1],[i2],[j1],[j2])+Qih0[i1+1,j1,i2+1,j2]*eintstack(0,[i1],[i2])+					  		
+					  		reduce(+,[e],{|i2+1<e<j2 && e<i2+MHL }:Qih0[i1+1,j1,e,j2]*eintbi([i1],[i2],[i1+1],[e]))+
+					  		reduce(+,[d],{|i1+1<d<j1 && d<i1+MHL  }:Qih0[d,j1,i2+1,j2]*eintbi([i1],[i2],[d],[i2+1]))+
+					  		reduce(+,[d,e],{|i1+1<d<j1  && i2+1<e<j2 && d<i1+MHL && e<i2+MHL}:Qih0[d,j1,e,j2]*eintbi([i1],[i2],[d],[e]));
+					  {|j1==i1+2 && j2==i2+2}:eintbi([i1],[i2],[j1],[j2])+Qih0[i1+1,j1,i2+1,j2]*eintstack(0,[i1],[i2]);
+					  {|j1==i1 && j2>i2} ||{|j1==i1+1 && j2<i2+1} || {|j1==i1+1 && j2>i2+1} || {|j1>i1+1 && j2<=i2+1}:
+					  				eintbi([i1],[i2],[j1],[j2]);
+					  esac
+					  else
+					  0;
+				  
+	Qih1[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2]) and base_pair(seq0[j1],seq1[j2])) then
+					  case
+					  {|j1==i1 && j2==i2}:noisolate(0)+ekissingbi([i1],[i2],[j1],[j2]);
+					  {|j1 == i1+1 && j2 == i2+1} || {|j2==i2+1 && j1==i1+1 && i2>=N-1}:ekissingstack(0,[i1],[i2]);
+					  {|j1>i1+1 && j2==i2+2}:ekissingbi([i1],[i2],[j1],[j2])+Qih1[i1+1,j1,i2+1,j2]*ekissingstack(0,[i1],[i2])+	
+					  		reduce(+,[d],{|i1+1<d<j1 && d<i1+MHL }:Qih1[d,j1,i2+1,j2]*ekissingbi([i1],[i2],[d],[i2+1]));					  		
+					  {|j1==i1+2 && j2>i2+2}:ekissingbi([i1],[i2],[j1],[j2])+Qih1[i1+1,j1,i2+1,j2]*ekissingstack(0,[i1],[i2])+					  		
+					  		reduce(+,[e],{|i2+1<e<j2 && e<i2+MHL}:Qih1[i1+1,j1,e,j2]*ekissingbi([i1],[i2],[i1+1],[e]));
+					  {|j1>i1+2 && j2>i2+2}:ekissingbi([i1],[i2],[j1],[j2])+Qih1[i1+1,j1,i2+1,j2]*ekissingstack(0,[i1],[i2])+					  		
+					  		reduce(+,[e],{|i2+1<e<j2 && e<i2+MHL}:Qih1[i1+1,j1,e,j2]*ekissingbi([i1],[i2],[i1+1],[e]))+
+					  		reduce(+,[d],{|i1+1<d<j1 && d<i1+MHL}:Qih1[d,j1,i2+1,j2]*ekissingbi([i1],[i2],[d],[i2+1]))+
+					  		reduce(+,[d,e],{|i1+1<d<j1  && i2+1<e<j2 && d<i1+MHL && e<i2+MHL}:Qih1[d,j1,e,j2]*ekissingbi([i1],[i2],[d],[e]));
+					  {|j1==i1+2 && j2==i2+2}:ekissingbi([i1],[i2],[j1],[j2])+Qih1[i1+1,j1,i2+1,j2]*ekissingstack(0,[i1],[i2]);
+					  {|j1==i1 && j2>i2} ||{|j1==i1+1 && j2<i2+1} || {|j1==i1+1 && j2>i2+1} || {|j1>i1+1 && j2<=i2+1}:
+					  				ekissingbi([i1],[i2],[j1],[j2]);
+					  esac
+					  else
+					  0;
+					  
+	Qihh00[i1,j1,i2,j2]=case
+						{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:
+									Qih0[i1,d,i2,e]*eintstackpenalty(0)*eaupenalty([i1],[i2],[d],[e])*Q00[d+1,j1]*Q01[e+1,j2])+
+									reduce(+,[d],{|i1<=d<j1 }:
+									Qih0[i1,d,i2,j2]*eintstackpenalty(0)*eaupenalty([i1],[i2],[d],[j2])*Q00[d+1,j1])+
+									reduce(+,[e],{|i2<=e<j2}:
+									Qih0[i1,j1,i2,e]*eintstackpenalty(0)*eaupenalty([i1],[i2],[j1],[e])*Q01[e+1,j2])+
+									Qih0[i1,j1,i2,j2]*eintstackpenalty(0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:
+									Qih0[i1,j1,i2,e]*eintstackpenalty(0)*eaupenalty([i1],[i2],[j1],[e])*Q01[e+1,j2])+
+									Qih0[i1,j1,i2,j2]*eintstackpenalty(0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:
+									Qih0[i1,d,i2,j2]*eintstackpenalty(0)*eaupenalty([i1],[i2],[d],[j2])*Q00[d+1,j1])+
+									Qih0[i1,j1,i2,j2]*eintstackpenalty(0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1==i1 && j2==i2}:Qih0[i1,j1,i2,j2]*eintstackpenalty(0)*eaupenalty([i1],[i2],[j1],[j2]);
+						esac;
+						
+	Qihh01[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2])) then case
+						{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:
+									Qih1[i1,d,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[e])*Q00[d+1,j1]*Q11[e+1,j2])+
+									reduce(+,[d],{|i1<=d<j1 }:
+									Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Q00[d+1,j1])+
+									reduce(+,[e],{|i2<=e<j2}:
+									Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Q11[e+1,j2])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:
+									Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Q11[e+1,j2])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:
+									Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Q00[d+1,j1])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1==i1 && j2==i2}:Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						esac
+						else
+						0;
+						
+	Qihh10[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2])) then case
+						{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:
+									Qih1[i1,d,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[e])*Q10[d+1,j1]*Q01[e+1,j2])+
+									reduce(+,[d],{|i1<=d<j1 }:
+									Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Q10[d+1,j1])+
+									reduce(+,[e],{|i2<=e<j2}:
+									Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Q01[e+1,j2])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:
+									Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Q01[e+1,j2])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:
+									Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Q10[d+1,j1])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1==i1 && j2==i2}:Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						esac else 0;
+						
+	Qihh11[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2])) then case
+						{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:
+									Qih1[i1,d,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[e])*Q10[d+1,j1]*Q11[e+1,j2])+
+									reduce(+,[d],{|i1<=d<j1 }:
+									Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Q10[d+1,j1])+
+									reduce(+,[e],{|i2<=e<j2}:
+									Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Q11[e+1,j2])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:
+									Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Q11[e+1,j2])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:
+									Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Q10[d+1,j1])+
+									Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						{|j1==i1 && j2==i2}:Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+						esac else 0;
+						
+						
+	Qihm00[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2])) then case
+						{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:
+						Qih0[i1,d,i2,e]*eintstackpenalty(0)*eaupenalty([i1],[i2],[d],[e])*((Qm00[d+1,j1]*Q01[e+1,j2])+(Qm01[e+1,j2])))+
+						reduce(+,[d],{|i1<=d<j1 }:
+						Qih0[i1,d,i2,j2]*eintstackpenalty(0)*eaupenalty([i1],[i2],[d],[j2])*Qm00[d+1,j1])+
+						reduce(+,[e],{|i2<=e<j2}:
+						Qih0[i1,j1,i2,e]*eintstackpenalty(0)*eaupenalty([i1],[i2],[j1],[e])*Qm01[e+1,j2]);
+						{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:
+						Qih0[i1,j1,i2,e]*eintstackpenalty(0)*eaupenalty([i1],[i2],[j1],[e])*Qm01[e+1,j2]);
+						{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:
+						Qih0[i1,d,i2,j2]*eintstackpenalty(0)*eaupenalty([i1],[i2],[d],[j2])*Qm00[d+1,j1]);
+						{|j1==i1 && j2==i2}:0;
+						esac else 0;
+						
+	Qihm01[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2])) then case
+						{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:
+						Qih1[i1,d,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[e])*((Qm00[d+1,j1]*Q11[e+1,j2])+(Qm11[e+1,j2])))+
+						reduce(+,[d],{|i1<=d<j1 }:
+						Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Qm00[d+1,j1])+
+						reduce(+,[e],{|i2<=e<j2}:
+						Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Qm11[e+1,j2]);
+						{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:
+						Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Qm11[e+1,j2]);
+						{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:
+						Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Qm00[d+1,j1]);
+						{|j1==i1 && j2==i2}:0;
+						esac else 0;	
+						
+	Qihm10[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2])) then case
+						{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:
+						Qih1[i1,d,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[e])*((Qm10[d+1,j1]*Q01[e+1,j2])+(ekissing(0,[j1]-[d],0)*Qm01[e+1,j2])))+
+						reduce(+,[d],{|i1<=d<j1 }:
+						Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Qm10[d+1,j1])+
+						reduce(+,[e],{|i2<=e<j2}:
+						Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Qm01[e+1,j2]);
+						{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:
+						Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Qm01[e+1,j2]);
+						{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:
+						Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Qm10[d+1,j1]);
+						{|j1==i1 && j2==i2}:0;
+						esac else 0;	
+						
+	Qihm11[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq1[i2])) then case
+						{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:
+									Qih1[i1,d,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[e])*((Qm10[d+1,j1]*Q11[e+1,j2])+(ekissing(0,[j1]-[d],0)*Qm11[e+1,j2])))+
+									reduce(+,[d],{|i1<=d<j1 }:
+									Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Qm10[d+1,j1])+
+									reduce(+,[e],{|i2<=e<j2}:
+									Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Qm11[e+1,j2]);
+						{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:
+									Qih1[i1,j1,i2,e]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[e])*Qm11[e+1,j2]);
+						{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:
+									Qih1[i1,d,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[d],[j2])*Qm10[d+1,j1]);
+						{|j1==i1 && j2==i2}:0;
+						esac else 0;		
+						
+	Qix00=Qixm00+Qixk00;
+	Qix01=Qixm01+Qixk01;
+	Qix10=Qixm10+Qixk10;
+	Qix11=Qixm11+Qixk11;
+	
+	auxqia01=Qiann01+Qiand01+Qiadn01+Qiadd01;
+	auxqia10=Qiann10+Qiand10+Qiadn10+Qiadd10;
+	auxqia11=Qiann11+Qiand11+Qiadn11+Qiadd11;
+	
+	auxqiadd01=Qiadd01+Qib01;
+	auxqiadd10=Qiadd10+Qib10;
+	auxqiadd11=Qiadd11+Qib11;
+	
+	tempQiy1[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2]) and base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3 && j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgk1[i2,j2,d,e]*Qixk01[i1, j1, d+1, e-1]);
+							{|j1 <= i1+3 && j2 > i2+3}||{|j1 > i1+3 && j2 <= i2+3}||{|j1 <= i1+3 && j2 <= i2+3}:0;
+							esac else 0;
+	tempQiy2[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2]) and base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3 && j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgm1[i2,j2,d,e]*Qixm02[i1, j1, d+1, e-1]);
+							{|j1 <= i1+3 && j2 > i2+3}||{|j1 > i1+3 && j2 <= i2+3}||{|j1 <= i1+3 && j2 <= i2+3}:0;
+							esac else 0;
+	Qiy[i1,j1,i2,j2]= tempQiy1+tempQiy2;
+					  	
+					  
+	tempQixm101[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgk1[i2,j2,d,e]*Qimk01[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;
+	tempQixm102[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgm1[i2,j2,d,e]*Qimm02[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;		
+	Qixm10[i1,j1,i2,j2]= tempQixm101+tempQixm102;
+					  
+		
+	tempQixm111[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgk1[i2,j2,d,e]*Qimk11[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;
+	tempQixm112[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgm1[i2,j2,d,e]*Qimm12[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;	
+	Qixm11[i1,j1,i2,j2]=tempQixm111+tempQixm112;
+	
+	tempQixm121[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgk1[i2,j2,d,e]*Qimk21[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;
+	tempQixm122[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgm1[i2,j2,d,e]*Qimm22[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;				
+	Qixm12[i1,j1,i2,j2]= tempQixm121+tempQixm122;	
+
+	tempQixk101[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgk1[i2,j2,d,e]*Qikk01[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;
+	tempQixk102[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgm1[i2,j2,d,e]*Qikm02[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;				
+	Qixk10[i1,j1,i2,j2]= tempQixk101+tempQixk102;
+		
+	tempQixk111[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgk1[i2,j2,d,e]*Qikk11[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;
+	tempQixk112[i1,j1,i2,j2]=if(base_pair(seq1[i2],seq1[j2])) then case
+							{|j2 > i2+3}:reduce(+,[d,e],{|i2<=d<=j2-2 && d+2<=e<=j2}:Qgm1[i2,j2,d,e]*Qikm12[i1, j1, d+1, e-1]);
+							{|j2 <= i2+3}:0;
+							esac else 0;			
+				
+	Qixk11[i1,j1,i2,j2]=tempQixk111+tempQixk112;
+	
+	tempQixm001[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgk0[i1,j1,d,e]*Qikm10[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;
+	tempQixm002[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgm0[i1,j1,d,e]*Qimm20[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;				
+	Qixm00[i1,j1,i2,j2]= tempQixm001+tempQixm002;	
+					  
+	tempQixm011[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgk0[i1,j1,d,e]*Qikm11[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;
+	tempQixm012[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgm0[i1,j1,d,e]*Qimm21[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;				
+	Qixm01[i1,j1,i2,j2]= tempQixm011+tempQixm012;
+	tempQixm021[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgk0[i1,j1,d,e]*Qikm12[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;
+	tempQixm022[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgm0[i1,j1,d,e]*Qimm22[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;			
+	Qixm02[i1,j1,i2,j2]= tempQixm021+tempQixm022;
+					  
+	tempQixk001[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgk0[i1,j1,d,e]*Qikk10[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;	
+	tempQixk002[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgm0[i1,j1,d,e]*Qimk20[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;					
+	Qixk00[i1,j1,i2,j2]=tempQixk001+tempQixk002;
+					  
+	tempQixk011[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgk0[i1,j1,d,e]*Qikk11[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;	
+	tempQixk012[i1,j1,i2,j2]=if(base_pair(seq0[i1],seq0[j1])) then case
+							{|j1 > i1+3}:reduce(+,[d,e],{|i1<=d<=j1-2 && d+2<=e<=j1}:Qgm0[i1,j1,d,e]*Qimk21[d+1,e-1,i2,j2]);
+							{|j1 <= i1+3}:0;
+							esac else 0;					
+	Qixk01[i1,j1,i2,j2]=tempQixk011+tempQixk012;
+					  
+	
+	tempQimm021[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann02[i1,d,i2,e]*Qixm02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm022[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann02[i1,d,i2,e]*Qixm10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm023[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann02[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm121[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann12[i1,d,i2,e]*Qixm02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm122[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann12[i1,d,i2,e]*Qixm11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm123[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann12[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm201[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann20[i1,d,i2,e]*Qixm00[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm202[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann20[i1,d,i2,e]*Qixm12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm203[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann20[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm211[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann21[i1,d,i2,e]*Qixm01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm212[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann21[i1,d,i2,e]*Qixm12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm213[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann21[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm221[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann22[i1,d,i2,e]*Qixm02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm222[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann22[i1,d,i2,e]*Qixm12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimm223[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann22[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	Qimm02=tempQimm021+tempQimm022*emulti(0,0,1)+tempQimm023*emulti(0,0,1);
+	Qimm20=tempQimm201*emulti(0,0,1)+tempQimm202+tempQimm203*emulti(0,0,1);
+	Qimm12=tempQimm121*ekissing(0,0,1)+tempQimm122*emulti(0,0,1)+tempQimm123*emulti(0,0,1)*ekissing(0,0,1);
+	Qimm21=tempQimm211*emulti(0,0,1)+tempQimm212*ekissing(0,0,1)+tempQimm213*emulti(0,0,1)*ekissing(0,0,1);
+	Qimm22=tempQimm221*emulti(0,0,1)+tempQimm222*emulti(0,0,1)+tempQimm223*emulti(0,0,1)*emulti(0,0,1);
+	
+	
+	tempQimk011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand01[i1,d,i2,e]*Qix01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk012[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand01[i1,d,i2,e]*Qixm10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk013[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand01[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk014[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann01[i1,d,i2,e]*Qixk01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand11[i1,d,i2,e]*Qix01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand11[i1,d,i2,e]*Qixm11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk113[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand11[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk114[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann11[i1,d,i2,e]*Qixk01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk201[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand20[i1,d,i2,e]*Qix00[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk202[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand20[i1,d,i2,e]*Qixm12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk203[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand20[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk204[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann20[i1,d,i2,e]*Qixk00[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk211[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand21[i1,d,i2,e]*Qix01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk212[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand21[i1,d,i2,e]*Qixm12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk213[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand21[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQimk214[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann21[i1,d,i2,e]*Qixk01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	Qimk01=tempQimk011+tempQimk012*ekissing(0,0,1)+tempQimk013*ekissing(0,0,1)+tempQimk014;
+	Qimk20=tempQimk201*emulti(0,0,1)+tempQimk202+tempQimk203*emulti(0,0,1)*ekissing(0,0,1)+tempQimk204*emulti(0,0,1);
+	Qimk11=tempQimk111*ekissing(0,0,1)+tempQimk112*ekissing(0,0,1)+tempQimk113*ekissing(0,0,1)*ekissing(0,0,1)+tempQimk114*ekissing(0,0,1);
+	Qimk21=tempQimk211*emulti(0,0,1)+tempQimk212*ekissing(0,0,1)+tempQimk213*emulti(0,0,1)*ekissing(0,0,1)+tempQimk214*emulti(0,0,1);
+	
+	
+	tempQikm021[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn02[i1,d,i2,e]*Qix10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm022[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn02[i1,d,i2,e]*Qixm02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm023[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn02[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm024[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann02[i1,d,i2,e]*Qixk10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn10[i1,d,i2,e]*Qix11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm102[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn10[i1,d,i2,e]*Qixm00[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm103[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn10[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm104[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann10[i1,d,i2,e]*Qixk11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn11[i1,d,i2,e]*Qix11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn11[i1,d,i2,e]*Qixm01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm113[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn11[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm114[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann11[i1,d,i2,e]*Qixk11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm121[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn12[i1,d,i2,e]*Qix11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm122[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn12[i1,d,i2,e]*Qixm02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm123[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn12[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikm124[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiann12[i1,d,i2,e]*Qixk11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	Qikm10=tempQikm101+tempQikm102*ekissing(0,0,1)+tempQikm103*ekissing(0,0,1)+tempQikm104;
+	Qikm02=tempQikm021*emulti(0,0,1)+tempQikm022+tempQikm023*emulti(0,0,1)+tempQikm024*emulti(0,0,1);
+	Qikm11=tempQikm111*ekissing(0,0,1)+tempQikm112*ekissing(0,0,1)+tempQikm113*ekissing(0,0,1)*ekissing(0,0,1)+tempQikm114*ekissing(0,0,1);
+	Qikm12=tempQikm121*emulti(0,0,1)+tempQikm122*ekissing(0,0,1)+tempQikm123*emulti(0,0,1)*ekissing(0,0,1)+tempQikm124*emulti(0,0,1);
+	
+	
+	tempQikk011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd01[i1,d,i2,e]*Qix01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk012[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd01[i1,d,i2,e]*Qix10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk013[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd01[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk014[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn01[i1,d,i2,e]*Qixk01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk015[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand01[i1,d,i2,e]*Qixk10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd10[i1,d,i2,e]*Qix00[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk102[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd10[i1,d,i2,e]*Qix11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk103[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd10[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk104[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn10[i1,d,i2,e]*Qixk00[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk105[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand10[i1,d,i2,e]*Qixk11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd11[i1,d,i2,e]*Qix01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd11[i1,d,i2,e]*Qix11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk113[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:auxqiadd11[i1,d,i2,e]*Qiy[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk114[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiadn11[i1,d,i2,e]*Qixk01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQikk115[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiand11[i1,d,i2,e]*Qixk11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	Qikk01=Qiar01+Qilr01+tempQikk011+tempQikk012*ekissing(0,0,1)+tempQikk013*ekissing(0,0,1)+tempQikk014+tempQikk015*ekissing(0,0,1);
+	Qikk10=Qiar10+Qilr10+tempQikk101*ekissing(0,0,1)+tempQikk102+tempQikk103*ekissing(0,0,1)+tempQikk104*ekissing(0,0,1)+tempQikk105;
+	Qikk11=Qiar11+Qilr11+tempQikk111*ekissing(0,0,1)+tempQikk112*ekissing(0,0,1)+tempQikk113*ekissing(0,0,1)*ekissing(0,0,1)+tempQikk114*ekissing(0,0,1)+tempQikk115*ekissing(0,0,1);
+
+	tempQia1[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix00[i1,d,i2,e]*Qi[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQia2[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix10[i1,d,i2,e]*Qi[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQia3[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qi[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQia4[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qix00[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qix00[i1,d,i2,j2])+Qix00[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qix00[i1,j1,i2,e])+Qix00[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qix00[i1,d,i2,j2])+Qix00[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qix00[i1,j1,i2,j2];
+				esac;
+	tempQia5[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qix10[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qix10[i1,d,i2,j2])+Qix10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qix10[i1,j1,i2,e])+Qix10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qix10[i1,d,i2,j2])+Qix10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qix10[i1,j1,i2,j2];
+				esac;	
+	tempQia6[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	Qia = tempQia1+tempQia2+tempQia3+tempQia4+tempQia5+tempQia6;
+	
+	
+	tempQib001[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihm00[i1,d,i2,e]*Qib00[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQib002[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihh00[i1,d,i2,e]*Qia[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQib011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihm01[i1,d,i2,e]*Qib01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQib012[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihh01[i1,d,i2,e]*auxqia01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQib101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihm10[i1,d,i2,e]*Qib10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQib102[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihh10[i1,d,i2,e]*auxqia10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQib111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihm11[i1,d,i2,e]*Qib11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQib112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihh11[i1,d,i2,e]*auxqia11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	
+	Qib00 = tempQib001+tempQib002+Qihh00;
+	Qib01 = tempQib011+tempQib012+Qihh01;
+	Qib10 = tempQib101+tempQib102+Qihh10;
+	Qib11 = tempQib111+tempQib112+Qihh11;
+	
+	tempQi1[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q01[i2,e-1]*Qia[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qia[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qia[d,j1,i2,j2])+Qia[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qia[i1,j1,e,j2])+Qia[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qia[d,j1,i2,j2])+Qia[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qia[i1,j1,i2,j2];
+				esac;
+	tempQi2[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q01[i2,e-1]*Qib00[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qib00[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qib00[d,j1,i2,j2])+Qib00[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qib00[i1,j1,e,j2])+Qib00[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qib00[d,j1,i2,j2])+Qib00[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qib00[i1,j1,i2,j2];
+				esac;
+	Qi[i1,j1,i2,j2] = tempQi1+tempQi2+Q00[i1,j1]*Q01[i2,j2];
+	
+	
+	tempQinn011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q11[i2,e-1]*Qiann01[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiann01[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiann01[d,j1,i2,j2])+Qiann01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiann01[i1,j1,e,j2])+Qiann01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiann01[d,j1,i2,j2])+Qiann01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiann01[i1,j1,i2,j2];
+				esac;
+	tempQinn021[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q21[i2,e-1]*Qiann02[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiann02[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiann02[d,j1,i2,j2])+Qiann02[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiann02[i1,j1,e,j2])+Qiann02[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiann02[d,j1,i2,j2])+Qiann02[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiann02[i1,j1,i2,j2];
+				esac;
+	tempQinn101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q01[i2,e-1]*Qiann10[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiann10[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiann10[d,j1,i2,j2])+Qiann10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiann10[i1,j1,e,j2])+Qiann10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiann10[d,j1,i2,j2])+Qiann10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiann10[i1,j1,i2,j2];
+				esac;
+	tempQinn111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q11[i2,e-1]*Qiann11[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiann11[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiann11[d,j1,i2,j2])+Qiann11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiann11[i1,j1,e,j2])+Qiann11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiann11[d,j1,i2,j2])+Qiann11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiann11[i1,j1,i2,j2];
+				esac;
+	tempQinn121[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q21[i2,e-1]*Qiann12[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiann12[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiann12[d,j1,i2,j2])+Qiann12[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiann12[i1,j1,e,j2])+Qiann12[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiann12[d,j1,i2,j2])+Qiann12[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiann12[i1,j1,i2,j2];
+				esac;
+	tempQinn201[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q20[i1,d-1]*Q01[i2,e-1]*Qiann20[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiann20[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiann20[d,j1,i2,j2])+Qiann20[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiann20[i1,j1,e,j2])+Qiann20[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiann20[d,j1,i2,j2])+Qiann20[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiann20[i1,j1,i2,j2];
+				esac;
+	tempQinn211[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q20[i1,d-1]*Q11[i2,e-1]*Qiann21[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiann21[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiann21[d,j1,i2,j2])+Qiann21[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiann21[i1,j1,e,j2])+Qiann21[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiann21[d,j1,i2,j2])+Qiann21[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiann21[i1,j1,i2,j2];
+				esac;
+	tempQinn221[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q20[i1,d-1]*Q21[i2,e-1]*Qiann22[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiann22[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiann22[d,j1,i2,j2])+Qiann22[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiann22[i1,j1,e,j2])+Qiann22[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiann22[d,j1,i2,j2])+Qiann22[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiann22[i1,j1,i2,j2];
+				esac;
+	
+	Qinn01[i1,j1,i2,j2]=tempQinn011+Q00[i1,j1]*Q11[i2,j2];
+	Qinn02[i1,j1,i2,j2]=tempQinn021+Q00[i1,j1]*Q21[i2,j2];
+	Qinn10[i1,j1,i2,j2]=tempQinn101+Q10[i1,j1]*Q01[i2,j2];
+	Qinn11[i1,j1,i2,j2]=tempQinn111+Q10[i1,j1]*Q11[i2,j2];
+	Qinn12[i1,j1,i2,j2]=tempQinn121+Q10[i1,j1]*Q21[i2,j2];
+	Qinn20[i1,j1,i2,j2]=tempQinn201+Q20[i1,j1]*Q01[i2,j2];
+	Qinn21[i1,j1,i2,j2]=tempQinn211+Q20[i1,j1]*Q11[i2,j2];
+	Qinn22[i1,j1,i2,j2]=tempQinn221+Q20[i1,j1]*Q21[i2,j2];
+	
+	
+	Qind01[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q11[i2,e-1]*Qiand01[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiand01[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiand01[d,j1,i2,j2])+Qiand01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiand01[i1,j1,e,j2])+Qiand01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiand01[d,j1,i2,j2])+Qiand01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiand01[i1,j1,i2,j2];
+				esac;
+	Qind10[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q01[i2,e-1]*Qiand10[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiand10[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiand10[d,j1,i2,j2])+Qiand10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiand10[i1,j1,e,j2])+Qiand10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiand10[d,j1,i2,j2])+Qiand10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiand10[i1,j1,i2,j2];
+				esac;
+	Qind11[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q11[i2,e-1]*Qiand11[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiand11[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiand11[d,j1,i2,j2])+Qiand11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiand11[i1,j1,e,j2])+Qiand11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiand11[d,j1,i2,j2])+Qiand11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiand11[i1,j1,i2,j2];
+				esac;
+	Qind20[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q20[i1,d-1]*Q01[i2,e-1]*Qiand20[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiand20[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiand20[d,j1,i2,j2])+Qiand20[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiand20[i1,j1,e,j2])+Qiand20[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiand20[d,j1,i2,j2])+Qiand20[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiand20[i1,j1,i2,j2];
+				esac;
+	Qind21[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q20[i1,d-1]*Q11[i2,e-1]*Qiand21[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiand21[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiand21[d,j1,i2,j2])+Qiand21[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiand21[i1,j1,e,j2])+Qiand21[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q20[i1,d-1]*Qiand21[d,j1,i2,j2])+Qiand21[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiand21[i1,j1,i2,j2];
+				esac;
+	
+	
+	Qidn01[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q11[i2,e-1]*Qiadn01[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiadn01[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiadn01[d,j1,i2,j2])+Qiadn01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiadn01[i1,j1,e,j2])+Qiadn01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiadn01[d,j1,i2,j2])+Qiadn01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiadn01[i1,j1,i2,j2];
+				esac;
+	Qidn02[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q21[i2,e-1]*Qiadn02[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiadn02[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiadn02[d,j1,i2,j2])+Qiadn02[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiadn02[i1,j1,e,j2])+Qiadn02[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiadn02[d,j1,i2,j2])+Qiadn02[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiadn02[i1,j1,i2,j2];
+				esac;
+	Qidn10[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q01[i2,e-1]*Qiadn10[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiadn10[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadn10[d,j1,i2,j2])+Qiadn10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiadn10[i1,j1,e,j2])+Qiadn10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadn10[d,j1,i2,j2])+Qiadn10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiadn10[i1,j1,i2,j2];
+				esac;
+	Qidn11[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q11[i2,e-1]*Qiadn11[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiadn11[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadn11[d,j1,i2,j2])+Qiadn11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiadn11[i1,j1,e,j2])+Qiadn11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadn11[d,j1,i2,j2])+Qiadn11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiadn11[i1,j1,i2,j2];
+				esac;
+	Qidn12[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q21[i2,e-1]*Qiadn12[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiadn12[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadn12[d,j1,i2,j2])+Qiadn12[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q21[i2,e-1]*Qiadn12[i1,j1,e,j2])+Qiadn12[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadn12[d,j1,i2,j2])+Qiadn12[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiadn12[i1,j1,i2,j2];
+				esac;
+	
+	
+	tempQidd011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q11[i2,e-1]*Qiadd01[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiadd01[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiadd01[d,j1,i2,j2])+Qiadd01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiadd01[i1,j1,e,j2])+Qiadd01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiadd01[d,j1,i2,j2])+Qiadd01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiadd01[i1,j1,i2,j2];
+				esac;
+	tempQidd101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q01[i2,e-1]*Qiadd10[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiadd10[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadd10[d,j1,i2,j2])+Qiadd10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiadd10[i1,j1,e,j2])+Qiadd10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadd10[d,j1,i2,j2])+Qiadd10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiadd10[i1,j1,i2,j2];
+				esac;
+	tempQidd111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q11[i2,e-1]*Qiadd11[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiadd11[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadd11[d,j1,i2,j2])+Qiadd11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiadd11[i1,j1,e,j2])+Qiadd11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiadd11[d,j1,i2,j2])+Qiadd11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiadd11[i1,j1,i2,j2];
+				esac;
+				
+	
+	tempQidd012[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q11[i2,e-1]*Qib01[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qib01[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qib01[d,j1,i2,j2])+Qib01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qib01[i1,j1,e,j2])+Qib01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qib01[d,j1,i2,j2])+Qib01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qib01[i1,j1,i2,j2];
+				esac;
+	tempQidd102[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q01[i2,e-1]*Qib10[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qib10[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qib10[d,j1,i2,j2])+Qib10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qib10[i1,j1,e,j2])+Qib10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qib10[d,j1,i2,j2])+Qib10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qib10[i1,j1,i2,j2];
+				esac;
+	tempQidd112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q11[i2,e-1]*Qib11[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qib11[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qib11[d,j1,i2,j2])+Qib11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qib11[i1,j1,e,j2])+Qib11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qib11[d,j1,i2,j2])+Qib11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qib11[i1,j1,i2,j2];
+				esac;
+	
+	Qidd01 = tempQidd011+tempQidd012;
+	Qidd10 = tempQidd101+tempQidd102;
+	Qidd11 = tempQidd111+tempQidd112;
+	
+	tempQiann014[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm01[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixm01[i1,d,i2,j2])+Qixm01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm01[i1,j1,i2,e])+Qixm01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q00[d+1,j1]*Qixm01[i1,d,i2,j2])+Qixm01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm01[i1,j1,i2,j2];
+				esac;
+	tempQiann015[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm10[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixm10[i1,d,i2,j2])+Qixm10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm10[i1,j1,i2,e])+Qixm10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixm10[i1,d,i2,j2])+Qixm10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm10[i1,j1,i2,j2];
+				esac;
+	tempQiann016[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	tempQiann024[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm02[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixm02[i1,d,i2,j2])+Qixm02[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm02[i1,j1,i2,e])+Qixm02[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q00[d+1,j1]*Qixm02[i1,d,i2,j2])+Qixm02[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm02[i1,j1,i2,j2];
+				esac;
+	tempQiann025[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm10[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixm10[i1,d,i2,j2])+Qixm10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm10[i1,j1,i2,e])+Qixm10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixm10[i1,d,i2,j2])+Qixm10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm10[i1,j1,i2,j2];
+				esac;
+	tempQiann026[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	tempQiann104[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixm00[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm00[i1,d,i2,j2])+Qixm00[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixm00[i1,j1,i2,e])+Qixm00[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q10[d+1,j1]*Qixm00[i1,d,i2,j2])+Qixm00[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm00[i1,j1,i2,j2];
+				esac;
+	tempQiann105[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixm11[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm11[i1,d,i2,j2])+Qixm11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixm11[i1,j1,i2,e])+Qixm11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm11[i1,d,i2,j2])+Qixm11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm11[i1,j1,i2,j2];
+				esac;
+	tempQiann106[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	tempQiann114[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm01[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm01[i1,d,i2,j2])+Qixm01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm01[i1,j1,i2,e])+Qixm01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q10[d+1,j1]*Qixm01[i1,d,i2,j2])+Qixm01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm01[i1,j1,i2,j2];
+				esac;
+	tempQiann115[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm11[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm11[i1,d,i2,j2])+Qixm11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm11[i1,j1,i2,e])+Qixm11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm11[i1,d,i2,j2])+Qixm11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm11[i1,j1,i2,j2];
+				esac;
+	tempQiann116[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	tempQiann124[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm02[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm02[i1,d,i2,j2])+Qixm02[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm02[i1,j1,i2,e])+Qixm02[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q10[d+1,j1]*Qixm02[i1,d,i2,j2])+Qixm02[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm02[i1,j1,i2,j2];
+				esac;
+	tempQiann125[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm11[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm11[i1,d,i2,j2])+Qixm11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm11[i1,j1,i2,e])+Qixm11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixm11[i1,d,i2,j2])+Qixm11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm11[i1,j1,i2,j2];
+				esac;
+	tempQiann126[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	tempQiann204[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixm00[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm00[i1,d,i2,j2])+Qixm00[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixm00[i1,j1,i2,e])+Qixm00[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q20[d+1,j1]*Qixm00[i1,d,i2,j2])+Qixm00[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm00[i1,j1,i2,j2];
+				esac;
+	tempQiann205[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixm12[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm12[i1,d,i2,j2])+Qixm12[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixm12[i1,j1,i2,e])+Qixm12[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm12[i1,d,i2,j2])+Qixm12[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm12[i1,j1,i2,j2];
+				esac;
+	tempQiann206[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	tempQiann214[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm01[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm01[i1,d,i2,j2])+Qixm01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm01[i1,j1,i2,e])+Qixm01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q20[d+1,j1]*Qixm01[i1,d,i2,j2])+Qixm01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm01[i1,j1,i2,j2];
+				esac;
+	tempQiann215[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm12[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm12[i1,d,i2,j2])+Qixm12[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixm12[i1,j1,i2,e])+Qixm12[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm12[i1,d,i2,j2])+Qixm12[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm12[i1,j1,i2,j2];
+				esac;
+	tempQiann216[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	tempQiann224[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm02[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm02[i1,d,i2,j2])+Qixm02[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm02[i1,j1,i2,e])+Qixm02[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q20[d+1,j1]*Qixm02[i1,d,i2,j2])+Qixm02[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm02[i1,j1,i2,j2];
+				esac;
+	tempQiann225[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm12[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm12[i1,d,i2,j2])+Qixm12[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixm12[i1,j1,i2,e])+Qixm12[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixm12[i1,d,i2,j2])+Qixm12[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixm12[i1,j1,i2,j2];
+				esac;
+	tempQiann226[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qiy[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qiy[i1,j1,i2,e])+Qiy[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qiy[i1,d,i2,j2])+Qiy[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiy[i1,j1,i2,j2];
+				esac;
+	
+	tempQiann011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm01[i1,d,i2,e]*Qinn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann012[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm10[i1,d,i2,e]*Qinn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann013[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qinn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann021[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm02[i1,d,i2,e]*Qinn02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann022[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm10[i1,d,i2,e]*Qinn02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann023[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qinn02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm00[i1,d,i2,e]*Qinn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann102[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm11[i1,d,i2,e]*Qinn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann103[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qinn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm01[i1,d,i2,e]*Qinn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm11[i1,d,i2,e]*Qinn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann113[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qinn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann121[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm02[i1,d,i2,e]*Qinn12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann122[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm11[i1,d,i2,e]*Qinn12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann123[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qinn12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann201[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm00[i1,d,i2,e]*Qinn20[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann202[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm12[i1,d,i2,e]*Qinn20[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann203[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qinn20[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann211[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm01[i1,d,i2,e]*Qinn21[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann212[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm12[i1,d,i2,e]*Qinn21[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann213[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qinn21[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann221[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm02[i1,d,i2,e]*Qinn22[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann222[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm12[i1,d,i2,e]*Qinn22[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiann223[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qinn22[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	Qiann01=tempQiann011+tempQiann012*ekissing(0,0,1)+tempQiann013*ekissing(0,0,1)+tempQiann014+tempQiann015*ekissing(0,0,1)+tempQiann016*ekissing(0,0,1);
+	Qiann02=tempQiann021+tempQiann022*emulti(0,0,1)+tempQiann023*emulti(0,0,1)+tempQiann024+tempQiann025*emulti(0,0,1)+tempQiann026*emulti(0,0,1);
+	Qiann10=tempQiann101*ekissing(0,0,1)+tempQiann102+tempQiann103*ekissing(0,0,1)+tempQiann104*ekissing(0,0,1)+tempQiann105+tempQiann106*ekissing(0,0,1);
+	Qiann11=tempQiann111*ekissing(0,0,1)+tempQiann112*ekissing(0,0,1)+tempQiann113*ekissing(0,0,1)*ekissing(0,0,1)+tempQiann114*ekissing(0,0,1)+tempQiann115*ekissing(0,0,1)+tempQiann116*ekissing(0,0,1)*ekissing(0,0,1);
+	Qiann12=tempQiann121*ekissing(0,0,1)+tempQiann122*emulti(0,0,1)+tempQiann123*ekissing(0,0,1)*emulti(0,0,1)+tempQiann124*ekissing(0,0,1)+tempQiann125*emulti(0,0,1)+tempQiann126*ekissing(0,0,1)*emulti(0,0,1);
+	Qiann20=tempQiann201*emulti(0,0,1)+tempQiann202+tempQiann203*emulti(0,0,1)+tempQiann204*emulti(0,0,1)+tempQiann205+tempQiann206*emulti(0,0,1);
+	Qiann21=tempQiann211*emulti(0,0,1)+tempQiann212*ekissing(0,0,1)+tempQiann213*emulti(0,0,1)*ekissing(0,0,1)+tempQiann214*emulti(0,0,1)+tempQiann215*ekissing(0,0,1)+tempQiann216*emulti(0,0,1)*ekissing(0,0,1);
+	Qiann22=tempQiann221*emulti(0,0,1)+tempQiann222*emulti(0,0,1)+tempQiann223*emulti(0,0,1)*emulti(0,0,1)+tempQiann224*emulti(0,0,1)+tempQiann225*emulti(0,0,1)+tempQiann226*emulti(0,0,1)*emulti(0,0,1);
+
+	
+	tempQiadn015[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk10[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixk10[i1,d,i2,j2])+Qixk10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk10[i1,j1,i2,e])+Qixk10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q00[d+1,j1]*Qixk10[i1,d,i2,j2])+Qixk10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk10[i1,j1,i2,j2];
+				esac;
+	tempQiadn025[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixk10[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixk10[i1,d,i2,j2])+Qixk10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixk10[i1,j1,i2,e])+Qixk10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q00[d+1,j1]*Qixk10[i1,d,i2,j2])+Qixk10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk10[i1,j1,i2,j2];
+				esac;
+	tempQiadn105[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixk11[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixk11[i1,d,i2,j2])+Qixk11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixk11[i1,j1,i2,e])+Qixk11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q10[d+1,j1]*Qixk11[i1,d,i2,j2])+Qixk11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk11[i1,j1,i2,j2];
+				esac;
+	tempQiadn115[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk11[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixk11[i1,d,i2,j2])+Qixk11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk11[i1,j1,i2,e])+Qixk11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q10[d+1,j1]*Qixk11[i1,d,i2,j2])+Qixk11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk11[i1,j1,i2,j2];
+				esac;
+	tempQiadn125[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixk11[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixk11[i1,d,i2,j2])+Qixk11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q21[e+1,j2]*Qixk11[i1,j1,i2,e])+Qixk11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q10[d+1,j1]*Qixk11[i1,d,i2,j2])+Qixk11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk11[i1,j1,i2,j2];
+				esac;
+				
+	
+	tempQiand015[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk01[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q00[d+1,j1]*Qixk01[i1,d,i2,j2])+Qixk01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk01[i1,j1,i2,e])+Qixk01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q00[d+1,j1]*Qixk01[i1,d,i2,j2])+Qixk01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk01[i1,j1,i2,j2];
+				esac;
+	tempQiand105[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixk00[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixk00[i1,d,i2,j2])+Qixk00[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixk00[i1,j1,i2,e])+Qixk00[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q10[d+1,j1]*Qixk00[i1,d,i2,j2])+Qixk00[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk00[i1,j1,i2,j2];
+				esac;
+	tempQiand115[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk01[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q10[d+1,j1]*Qixk01[i1,d,i2,j2])+Qixk01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk01[i1,j1,i2,e])+Qixk01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q10[d+1,j1]*Qixk01[i1,d,i2,j2])+Qixk01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk01[i1,j1,i2,j2];
+				esac;
+	tempQiand205[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixk00[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixk00[i1,d,i2,j2])+Qixk00[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q01[e+1,j2]*Qixk00[i1,j1,i2,e])+Qixk00[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q20[d+1,j1]*Qixk00[i1,d,i2,j2])+Qixk00[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk00[i1,j1,i2,j2];
+				esac;
+	tempQiand215[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}: reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk01[i1,j1,i2,e])+reduce(+,[d],{|i1<=d<j1 }:Q20[d+1,j1]*Qixk01[i1,d,i2,j2])+Qixk01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<=e<j2}:Q11[e+1,j2]*Qixk01[i1,j1,i2,e])+Qixk01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<=d<j1}:Q20[d+1,j1]*Qixk01[i1,d,i2,j2])+Qixk01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qixk01[i1,j1,i2,j2];
+				esac;
+	
+	tempQiand011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix01[i1,d,i2,e]*Qind01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand012[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk01[i1,d,i2,e]*Qinn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand013[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm10[i1,d,i2,e]*Qind01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand014[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qind01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix00[i1,d,i2,e]*Qind10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand102[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk00[i1,d,i2,e]*Qinn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand103[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm11[i1,d,i2,e]*Qind10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand104[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qind10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix01[i1,d,i2,e]*Qind11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk01[i1,d,i2,e]*Qinn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand113[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm11[i1,d,i2,e]*Qind11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand114[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qind11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand201[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix00[i1,d,i2,e]*Qind20[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand202[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk00[i1,d,i2,e]*Qinn20[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand203[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm12[i1,d,i2,e]*Qind20[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand204[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qind20[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand211[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix01[i1,d,i2,e]*Qind21[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand212[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk01[i1,d,i2,e]*Qinn21[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand213[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm12[i1,d,i2,e]*Qind21[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiand214[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qind21[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;			
+	Qiand01=tempQiand011+tempQiand012+tempQiand013*ekissing(0,0,1)+tempQiand014*ekissing(0,0,1)+tempQiand015;
+	Qiand10=tempQiand101*ekissing(0,0,1)+tempQiand102*ekissing(0,0,1)+tempQiand103+tempQiand104*ekissing(0,0,1)+tempQiand105*ekissing(0,0,1);
+	Qiand11=tempQiand111*ekissing(0,0,1)+tempQiand112*ekissing(0,0,1)+tempQiand113*ekissing(0,0,1)+tempQiand114*ekissing(0,0,1)*ekissing(0,0,1)+tempQiand115*ekissing(0,0,1);
+	Qiand20=tempQiand201*emulti(0,0,1)+tempQiand202*emulti(0,0,1)+tempQiand203+tempQiand204*emulti(0,0,1)+tempQiand205*emulti(0,0,1);
+	Qiand21=tempQiand211*emulti(0,0,1)+tempQiand212*emulti(0,0,1)+tempQiand213*ekissing(0,0,1)+tempQiand214*emulti(0,0,1)*ekissing(0,0,1)+tempQiand215*emulti(0,0,1);
+
+
+	tempQiadn011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm01[i1,d,i2,e]*Qidn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn012[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix10[i1,d,i2,e]*Qidn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn013[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk10[i1,d,i2,e]*Qinn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn014[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qidn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn021[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm02[i1,d,i2,e]*Qidn02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn022[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix10[i1,d,i2,e]*Qidn02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn023[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk10[i1,d,i2,e]*Qinn02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn024[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qidn02[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm00[i1,d,i2,e]*Qidn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn102[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix11[i1,d,i2,e]*Qidn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn103[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk11[i1,d,i2,e]*Qinn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn104[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qidn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm01[i1,d,i2,e]*Qidn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix11[i1,d,i2,e]*Qidn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn113[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk11[i1,d,i2,e]*Qinn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn114[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qidn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn121[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixm02[i1,d,i2,e]*Qidn12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn122[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix11[i1,d,i2,e]*Qidn12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn123[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk11[i1,d,i2,e]*Qinn12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadn124[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qidn12[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	Qiadn01=tempQiadn011+tempQiadn012*ekissing(0,0,1)+tempQiadn013*ekissing(0,0,1)+tempQiadn014*ekissing(0,0,1)+tempQiadn015*ekissing(0,0,1);
+	Qiadn02=tempQiadn021+tempQiadn022*emulti(0,0,1)+tempQiadn023*emulti(0,0,1)+tempQiadn024*emulti(0,0,1)+tempQiadn025*emulti(0,0,1);
+	Qiadn10=tempQiadn101*ekissing(0,0,1)+tempQiadn102+tempQiadn103+tempQiadn104*ekissing(0,0,1)+tempQiadn105;
+	Qiadn11=tempQiadn111*ekissing(0,0,1)+tempQiadn112*ekissing(0,0,1)+tempQiadn113*ekissing(0,0,1)+tempQiadn114*ekissing(0,0,1)*ekissing(0,0,1)+tempQiadn115*ekissing(0,0,1);
+	Qiadn12=tempQiadn121*ekissing(0,0,1)+tempQiadn122*emulti(0,0,1)+tempQiadn123*emulti(0,0,1)+tempQiadn124*emulti(0,0,1)*ekissing(0,0,1)+tempQiadn125*emulti(0,0,1);
+
+
+	tempQiadd011[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix01[i1,d,i2,e]*Qidd01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd012[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk01[i1,d,i2,e]*Qidn01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd013[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk10[i1,d,i2,e]*Qind01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd014[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix10[i1,d,i2,e]*Qidd01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd015[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qidd01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd101[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix00[i1,d,i2,e]*Qidd10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd102[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk00[i1,d,i2,e]*Qidn10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd103[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk11[i1,d,i2,e]*Qind10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd104[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix11[i1,d,i2,e]*Qidd10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd105[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qidd10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd111[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix01[i1,d,i2,e]*Qidd11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd112[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk01[i1,d,i2,e]*Qidn11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd113[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qixk11[i1,d,i2,e]*Qind11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd114[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix11[i1,d,i2,e]*Qidd11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	tempQiadd115[i1,j1,i2,j2]=case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qidd11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac;
+	Qiadd01=tempQiadd011+tempQiadd012+tempQiadd013*ekissing(0,0,1)+tempQiadd014*ekissing(0,0,1)+tempQiadd015*ekissing(0,0,1);
+	Qiadd10=tempQiadd101*ekissing(0,0,1)+tempQiadd102*ekissing(0,0,1)+tempQiadd103+tempQiadd104+tempQiadd105*ekissing(0,0,1);
+	Qiadd11=tempQiadd111*ekissing(0,0,1)+tempQiadd112*ekissing(0,0,1)+tempQiadd113*ekissing(0,0,1)+tempQiadd114*ekissing(0,0,1)+tempQiadd115*ekissing(0,0,1)*ekissing(0,0,1);
+
+
+
+	tempQir011[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q11[i2,e-1]*Qilr01[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qilr01[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qilr01[d,j1,i2,j2])+Qilr01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qilr01[i1,j1,e,j2])+Qilr01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qilr01[d,j1,i2,j2])+Qilr01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qilr01[i1,j1,i2,j2];
+				esac else 0;
+	tempQir101[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q01[i2,e-1]*Qilr10[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qilr10[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qilr10[d,j1,i2,j2])+Qilr10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qilr10[i1,j1,e,j2])+Qilr10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qilr10[d,j1,i2,j2])+Qilr10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qilr10[i1,j1,i2,j2];
+				esac else 0;
+	tempQir111[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q11[i2,e-1]*Qilr11[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qilr11[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qilr11[d,j1,i2,j2])+Qilr11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qilr11[i1,j1,e,j2])+Qilr11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qilr11[d,j1,i2,j2])+Qilr11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qilr11[i1,j1,i2,j2];
+				esac else 0;
+	
+	tempQir012[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q00[i1,d-1]*Q11[i2,e-1]*Qiar01[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiar01[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiar01[d,j1,i2,j2])+Qiar01[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiar01[i1,j1,e,j2])+Qiar01[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q00[i1,d-1]*Qiar01[d,j1,i2,j2])+Qiar01[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiar01[i1,j1,i2,j2];
+				esac else 0;
+	tempQir102[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q01[i2,e-1]*Qiar10[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiar10[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiar10[d,j1,i2,j2])+Qiar10[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q01[i2,e-1]*Qiar10[i1,j1,e,j2])+Qiar10[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiar10[d,j1,i2,j2])+Qiar10[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiar10[i1,j1,i2,j2];
+				esac else 0;
+	tempQir112[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<d<=j1 && i2<e<=j2}:Q10[i1,d-1]*Q11[i2,e-1]*Qiar11[d,j1,e,j2])+ reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiar11[i1,j1,e,j2])+reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiar11[d,j1,i2,j2])+Qiar11[i1,j1,i2,j2];
+				{|j1==i1 && j2>i2}:reduce(+,[e],{|i2<e<=j2}:Q11[i2,e-1]*Qiar11[i1,j1,e,j2])+Qiar11[i1,j1,i2,j2];
+				{|j1>i1 && j2==i2}:reduce(+,[d],{|i1<d<=j1 }:Q10[i1,d-1]*Qiar11[d,j1,i2,j2])+Qiar11[i1,j1,i2,j2];
+				{|j1==i1 && j2==i2}:Qiar11[i1,j1,i2,j2];
+				esac else 0;
+				
+	Qir01=tempQir011+tempQir012;
+	Qir10=tempQir101+tempQir102;
+	Qir11=tempQir111+tempQir112;
+
+	
+	tempQiar011[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix01[i1,d,i2,e]*Qir01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQiar012[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix10[i1,d,i2,e]*Qir01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQiar013[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qir01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQiar101[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix00[i1,d,i2,e]*Qir10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQiar102[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix11[i1,d,i2,e]*Qir10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQiar103[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qir10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQiar111[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix01[i1,d,i2,e]*Qir11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQiar112[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qix11[i1,d,i2,e]*Qir11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQiar113[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qiy[i1,d,i2,e]*Qir11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	Qiar01[i1,j1,i2,j2]=tempQiar011+tempQiar012*ekissing(0,0,1)+tempQiar013*ekissing(0,0,1);
+	Qiar10[i1,j1,i2,j2]=tempQiar101*ekissing(0,0,1)+tempQiar102+tempQiar103*ekissing(0,0,1);
+	Qiar11[i1,j1,i2,j2]=tempQiar111*ekissing(0,0,1)+tempQiar112*ekissing(0,0,1)+tempQiar113*ekissing(0,0,1)*ekissing(0,0,1);
+
+	
+	tempQilr011[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihm01[i1,d,i2,e]*Qilr01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQilr012[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihh01[i1,d,i2,e]*Qiar01[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQilr101[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihm10[i1,d,i2,e]*Qilr10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQilr102[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihh10[i1,d,i2,e]*Qiar10[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQilr111[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihm11[i1,d,i2,e]*Qilr11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+	tempQilr112[i1,j1,i2,j2]=if(base_pair(seq0[j1], seq1[j2])) then case
+				{|j1>i1 && j2>i2}:reduce(+,[d,e],{|i1<=d<j1 && i2<=e<j2}:Qihh11[i1,d,i2,e]*Qiar11[d+1,j1,e+1,j2]);
+				{|j1==i1 && j2>i2}||{|j1>i1 && j2==i2}||{|j1==i1 && j2==i2}:0;
+				esac else 0;
+				
+	Qilr01[i1,j1,i2,j2]=tempQilr011+tempQilr012+Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+	Qilr10[i1,j1,i2,j2]=tempQilr101+tempQilr102+Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+	Qilr11[i1,j1,i2,j2]=tempQilr111+tempQilr112+Qih1[i1,j1,i2,j2]*ekissing(1,0,0)*eaupenalty([i1],[i2],[j1],[j2]);
+.

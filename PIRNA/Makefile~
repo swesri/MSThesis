@@ -1,0 +1,55 @@
+#################################################################################################
+#Makefile
+#Author: Swetha Varadarajan, modified the automaticaly generated code from AlphaZ
+#Last Update by Swetha Varadarajan: May 25, 2018
+#################################################################################################
+
+CFLAGS=-O3 -m64 -std=c99
+LIBRARIES=-lm
+CC=g++
+C=gcc
+
+PCPPSRC = energy.C  alloc.C piRNAb2.c
+PCPPOBJECTS = $(PCPPSRC:.C=.o)
+
+PLUTO = energy.C  alloc.C piRNAb2.pluto.c
+PLUTOBJS = $(PLUTO:.C=.o)
+
+OBJS = piRNAb2.o 
+all: check_pluto
+
+debug: CFLAGS =-DDEBUG -g -Wall -Wextra -std=c99
+debug: all
+		
+plain: $(PCPPOBJECTS)
+	$(CC) piRNAb2-wrapper.c -o piRNAb2 $(PCPPOBJECTS) $(CFLAGS) $(LIBRARIES)
+
+check: $(PCPPOBJECTS)
+	$(CC) piRNAb2-wrapper.c -o piRNAb2.check $(PCPPOBJECTS) $(CFLAGS) $(LIBRARIES) -DCHECKING
+
+check_pluto: $(PLUTOBJS)
+	$(CC) piRNAb2-wrapper.c -o piRNAb2.pluto.check $(PLUTOBJS) $(CFLAGS) $(LIBRARIES) -DCHECKING
+
+verify: $(PCPPOBJECTS) piRNAb2_verify.o
+	$(CC) piRNAb2-wrapper.c -o piRNAb2.verify $(PCPPOBJECTS) piRNAb2_verify.o $(CFLAGS) $(LIBRARIES) -DVERIFY
+
+verify-rand: $(PCPPOBJECTS) piRNAb2_verify.o
+	$(CC) piRNAb2-wrapper.c -o piRNAb2.verify-rand $(PCPPOBJECTS) piRNAb2_verify.o $(CFLAGS) $(LIBRARIES) -DVERIFY -DRANDOM
+
+piRNAb2.o : piRNAb2.c
+	$(CC) piRNAb2.c -o piRNAb2.o $(CFLAGS) -c
+
+piRNAb2.pluto.o : piRNAb2.pluto.c
+	$(CC) piRNAb2.pluto.c -o piRNAb2.pluto.o $(CFLAGS) -c
+
+piRNAb2_verify.o : piRNAb2_verify.c
+	$(CC) piRNAb2_verify.c -o piRNAb2_verify.o $(CFLAGS) -c
+
+.C.o: $(PCPPSRC) 
+	$(CC) $(CPFLAGS) -c $< -o $@
+
+.C.o: $(PLUTO) 
+	$(CC) $(CPFLAGS) -c $< -o $@
+
+clean:
+	rm -f *.o piRNAb2 piRNAb2.check piRNAb2.verify piRNAb2.verify-rand
